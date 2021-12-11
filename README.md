@@ -40,7 +40,7 @@ export AWS_PROFILE=fabacus-development
 
 ###### Export environment variables (AWS profile and ENVIRONMENT):
 ```bash
-
+export PROJECT_NAME=Fabacus
 export ENVIRONMENT=development
 export AWS_REGION=eu-west-1
 export AWS_PROFILE=fabacus-$ENVIRONMENT
