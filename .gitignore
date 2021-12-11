@@ -1,0 +1,9 @@
+#
+.idea
+
+# terraform
+.terraform*
+
+*.tfstate*
+terraform/containers.json
+terraform/backend.tf
