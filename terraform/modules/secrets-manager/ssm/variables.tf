@@ -11,12 +11,10 @@ variable "ENVIRONMENT" {
   description = "Environment name"
 }
 
-variable "PROJECT_SERVICES_LIST" {
-  type = list
-  description = "Project Services names"
-}
+variable "service_name" {}
 
-variable "PROJECT_SERVICES_LIST_LOCAL_UPDATE" {
-  type = list
-  description = "Project Services names"
-}
+variable "aws_kms_key_env" {}
+
+variable "value_update" {}
+
+variable "PROJECT_SERVICES_LIST_LOCAL_UPDATE" {}

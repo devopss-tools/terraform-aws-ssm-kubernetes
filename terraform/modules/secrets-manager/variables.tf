@@ -11,7 +11,12 @@ variable "ENVIRONMENT" {
   description = "Environment name"
 }
 
-variable "PROJECT_SERVICES_NAME" {
+variable "PROJECT_SERVICES_LIST" {
+  type = list
+  description = "Project Services names"
+}
+
+variable "PROJECT_SERVICES_LIST_LOCAL_UPDATE" {
   type = list
   description = "Project Services names"
 }

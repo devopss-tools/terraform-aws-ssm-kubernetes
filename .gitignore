@@ -7,3 +7,7 @@
 *.tfstate*
 terraform/containers.json
 terraform/backend.tf
+
+# services environment variables files
+.env*
+!.env.development.sample
