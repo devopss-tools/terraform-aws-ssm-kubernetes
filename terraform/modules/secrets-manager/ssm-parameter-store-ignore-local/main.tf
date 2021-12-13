@@ -1,21 +1,12 @@
-variable "service_name" {}
-variable "aws_kms_key_env" {}
-variable "overwrite" {}
-variable "PROJECT_SERVICES_LIST_LOCAL_UPDATE" {}
-
 resource "aws_ssm_parameter" "secret" {
+  count           = contains(var.PROJECT_SERVICES_LIST, var.service_name) ? 0 : 1
   name            = "/${var.PROJECT_NAME}/${var.ENVIRONMENT}/${var.service_name}-vars-secrets"
   description     = "The parameter description"
   type            = "SecureString"
-  value           = fileexists("../../../.env.${var.ENVIRONMENT}.${var.service_name}") ? file("../../../.env.${var.ENVIRONMENT}.${var.service_name}") : "default_terraform=null"
+  value           = file("../../../.env.${var.ENVIRONMENT}.${var.service_name}")
   key_id          = var.aws_kms_key_env
   tier            = "Standard"  # Free up to 10k, size 4KB, parameter policies is not available but envs separated in diferent AWS accounts
-  overwrite       = var.overwrite
-  lifecycle {
-    ignore_changes =  [
-      value
-    ]
-  }
+  overwrite       = true
   tags = {
     Name          = "/${var.PROJECT_NAME}/${var.ENVIRONMENT}/${var.service_name}-vars-secrets"
     ManagedBy     = "Terraform"

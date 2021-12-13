@@ -11,3 +11,9 @@ terraform/backend.tf
 # services environment variables files
 .env*
 !.env.development.sample
+
+# kubeconfig files
+kube.config*
+.kube.config*
+kubeconfig*
+.kubeconfig*

@@ -10,3 +10,9 @@ variable "AWS_REGION" {
 variable "ENVIRONMENT" {
   description = "Environment name"
 }
+
+variable "service_name" {}
+
+variable "aws_kms_key_env" {}
+
+variable "PROJECT_SERVICES_LIST_LOCAL_UPDATE" {}

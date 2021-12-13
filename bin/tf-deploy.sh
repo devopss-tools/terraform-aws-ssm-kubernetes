@@ -17,7 +17,9 @@ cd "$PROJECT_ROOT/terraform" || _fail
 if [[ $1 == "plan" ]]; then
   _info "terraform plan"
   terraform -chdir="./environments/$ENVIRONMENT" plan -lock=false -var-file="../../services.tfvars" || _fail
-  terraform -chdir="./environments/$ENVIRONMENT" output || _fail
+elif [[ $1 == "output" ]]; then
+  _info "terraform plan with output"
+  terraform -chdir="./environments/$ENVIRONMENT" plan -out tfplan || _fail
 elif [[ $1 == "validate" ]]; then
   _info "terraform validate"
   terraform -chdir="./environments/$ENVIRONMENT" validate || _fail
@@ -30,5 +32,5 @@ elif [[ $1 == "destroy" ]]; then
 else
   _info "terraform apply"
   terraform -chdir="./environments/$ENVIRONMENT" apply -auto-approve -var-file="../../services.tfvars" || _fail
-  terraform -chdir="./environments/$ENVIRONMENT" output null_out || _fail
+  terraform -chdir="./environments/$ENVIRONMENT" output || _fail
 fi

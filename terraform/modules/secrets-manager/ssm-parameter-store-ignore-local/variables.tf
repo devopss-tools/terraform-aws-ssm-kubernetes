@@ -15,6 +15,6 @@ variable "service_name" {}
 
 variable "aws_kms_key_env" {}
 
-variable "value_update" {}
+variable "PROJECT_SERVICES_LIST" {}
 
 variable "PROJECT_SERVICES_LIST_LOCAL_UPDATE" {}

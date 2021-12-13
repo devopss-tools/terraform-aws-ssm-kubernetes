@@ -1,7 +1,30 @@
-## Terrafrom for deploy EKS Secrets Manager Solution
+## Terrafrom for deploy AWS SSM Parameter Store Solution for Kuebrnetes secrets
 
+---------------------------------------------
+##### Deploy [MikroK8s](https://microk8s.io)
+###### Create kubeconfig file
+```bash
+sudo microk8s kubectl config view > kubeconfig.local
+```
 
-### Prepare development environment
+### Create Kubernetes Secrets
+
+---------------------------------------------
+##### Configure kube.config file for 
+kubectl config view > kubeconfig.development
+kubectl config view > kubeconfig.staging
+kubectl config view > kubeconfig.production
+###### SSM Parameter Store type SecureString and tier Standard
+#### Advantages 
+* Free up to 10000 parameters store (tier Standard);
+* Scalable and High Availability serverless solution;
+* Secure (Encryption enable using KMS);
+* Automatically versioning on changes;
+* Easy integrate with AWS services like code build, pipeline e.t.c.
+#### Disadvantage
+* Access Policy for IAM users/roles unavailable because tier Standard, it's good solution when environments are separated by AWS accounts.
+
+### Prepare local development environment
 
 ---------------------------------------------
 ###### Install local tools (terraform switch versions, aws-cli, etc):
@@ -21,6 +44,20 @@ aws configure --profile=fabacus-production
 ```
 
 ###### Creat services .env files in case update parameter store from file
+
+
+##### [MikroK8s](https://microk8s.io) deploy for development 
+
+* Deploy MikroK8s https://microk8s.io
+* Create kubeconfig file
+```bash
+sudo microk8s kubectl config view > kubeconfig.local
+```
+
+##### Configure kube.config file for 
+kubectl config view > kubeconfig.development
+kubectl config view > kubeconfig.staging
+kubectl config view > kubeconfig.production
 
 
 ### Terrafrom apply/update and destroy (clean) infrastructure  
@@ -66,8 +103,8 @@ bash bin/tf-init.sh
 >> ${PROJECT_NAME}-${ENVIRONMENT}-secret
 
 * Add service list into file terraform/services.tfvars
-> ###### PROJECT_SERVICES_LIST - all services list
-> ###### PROJECT_SERVICES_LIST_LOCAL_UPDATE - services from all list which will be updated from local .env.$ENVIRONMENT.service_name root project files
+> ###### PROJECT_SERVICES_LIST - all services list which secrets will have default value ```default_terraform=null``` and can be update from AWS console/CLI only (not from terraform) 
+> ###### PROJECT_SERVICES_LIST_LOCAL_UPDATE - services list which secrets will be updated from local .env.$ENVIRONMENT.service_name root project files
 
 ##### terraform/services.tfvars file example:
 ```yaml
@@ -77,11 +114,13 @@ PROJECT_SERVICES_LIST = [
   "api",
   "shared",
   "cronjob-api",
-  "cronjob-temp"
+  "cronjob-temp",
+  "shared-db-api-password",
+  "shared-paypal-token",
+  "shared-api-worker-cronjob",
 ]
 PROJECT_SERVICES_LIST_LOCAL_UPDATE = [  # make sure the file .env.$ENVIRONMENT.SERVICE  exists
   "api",
-  "shared"
 ]
 ```
 * In this example have to create files (if not exist default: "```default_terraform=null```"): ```.env.development.api``` and ```.env.development.shared```, on terraform apply only these two SSM Parameters will be update (content/value replace) by terraform with file contant

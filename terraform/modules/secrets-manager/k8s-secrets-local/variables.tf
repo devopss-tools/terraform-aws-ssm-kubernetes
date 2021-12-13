@@ -21,3 +21,6 @@ variable "PROJECT_SERVICES_LIST_LOCAL_UPDATE" {
   description = "Project Services names"
 }
 
+variable "service_name" {}
+
+variable "aws_kms_key_env" {}
