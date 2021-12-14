@@ -23,7 +23,8 @@ kubectl config view > kubeconfig.production
 * Scalable and High Availability serverless solution;
 * Secure (Encryption enable using KMS);
 * Automatically versioning on changes;
-* Easy integrate with AWS services like code build, pipeline e.t.c.
+* Any type of Kubernetes (cloud, on-premise, hybrid);
+* Easy to integrate with AWS services like code build, pipeline e.t.c.
 #### Disadvantage
 * Access Policy for IAM users/roles unavailable because tier Standard, it's good solution when environments are separated by AWS accounts.
 
@@ -151,7 +152,33 @@ bash bin/tf-deploy.sh destroy
 ```
 
 
-### Test mount k8s secret using [MikroK8s](https://microk8s.io)
+### How to attache/use secrets into Kubernetes deployments
+
+---------------------------------------------
+###### List all secrets in current namespace
+```bash
+microk8s kubectl -n $ENVIRONMENT get secrets
+```
+
+###### Kubernetes deployment yaml 
+```yaml
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: ...
+spec:
+  replicas: ...
+  template:
+    spec:
+      containers:
+      - name: ...
+        image: ...
+    envFrom:
+    - secretRef:
+        name: <K8S_SECRET_NAME_YOU_NEED>
+```
+
+### Test mount k8s secret using local [MikroK8s](https://microk8s.io)
 
 ---------------------------------------------
 
