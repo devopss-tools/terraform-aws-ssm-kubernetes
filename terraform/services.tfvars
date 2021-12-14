@@ -13,4 +13,5 @@ PROJECT_SERVICES_LIST_LOCAL_UPDATE = [  # make sure the file .env.$ENVIRONMENT.S
 #  "shared-update-from-local-env-file",
   "shared",
   "cronjob",
+  "sample",
 ]

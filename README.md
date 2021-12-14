@@ -1,11 +1,14 @@
 ## Terrafrom for deploy AWS SSM Parameter Store Solution for Kuebrnetes secrets
 
+* Note: Kubernetes deploy secrete into ```namespace=$ENVIRONMENT```
+
 ---------------------------------------------
 ##### Deploy [MikroK8s](https://microk8s.io)
-###### Create kubeconfig file
+###### Create kubeconfig.$ENVIRONMENT file using content of command 
 ```bash
-sudo microk8s kubectl config view > kubeconfig.local
-```
+microk8s config
+````
+* Note: can require reboot!
 
 ### Create Kubernetes Secrets
 
@@ -35,6 +38,7 @@ sudo bash tools-install.sh
 ```bash
 tfswitch -s 1.0
 ```
+
 ###### AWS configure profile credentials:
 * separate IAM users KEY and SECRET without console access and with limited permissions on (SSM, KMS)  
 ```bash
@@ -43,17 +47,18 @@ aws configure --profile=fabacus-staging
 aws configure --profile=fabacus-production
 ```
 
-###### Creat services .env files in case update parameter store from file
+[//]: # (###### Creat services .env files in case update parameter store from file)
 
-
-##### [MikroK8s](https://microk8s.io) deploy for development 
+##### [MikroK8s](https://microk8s.io) deploy for local development / testing
 
 * Deploy MikroK8s https://microk8s.io
 * Create kubeconfig file
 ```bash
 sudo microk8s kubectl config view > kubeconfig.local
 ```
-
+```bash
+microk8s kubectl create namespace $ENVIRONMENT
+```
 ##### Configure kube.config file for 
 kubectl config view > kubeconfig.development
 kubectl config view > kubeconfig.staging
@@ -68,16 +73,15 @@ kubectl config view > kubeconfig.production
 export PATH=$HOME/bin:$PATH
 terraform -v
 ```
-###### AWS select profile to deploy (example development):
-```bash
-export AWS_PROFILE=fabacus-development
-```
+
 ###### Export environment variables (AWS profile and ENVIRONMENT):
+* PROJECT_NAME - must include only lowercase
+* ENVIRONMENT  - must include only lowercase
 ```bash
-export PROJECT_NAME=Fabacus
+export PROJECT_NAME=fabacus
 export ENVIRONMENT=development
 export AWS_REGION=eu-west-1
-export AWS_PROFILE=fabacus-$ENVIRONMENT
+export AWS_PROFILE=$PROJECT_NAME-$ENVIRONMENT
 ```
 
 ### Terrafrom init environment
@@ -98,9 +102,9 @@ bash bin/tf-init.sh
 > KMS ecryption key tag name and alias:
 >> ${PROJECT_NAME}-${ENVIRONMENT}-kms-key-alias
 
-#### Kubernetes object formats
+#### Kubernetes secrets formats
 > SSM Parameters (type: secured, encrypted)
->> ${PROJECT_NAME}-${ENVIRONMENT}-secret
+>> fabacus-${ENVIRONMENT}-secret
 
 * Add service list into file terraform/services.tfvars
 > ###### PROJECT_SERVICES_LIST - all services list which secrets will have default value ```default_terraform=null``` and can be update from AWS console/CLI only (not from terraform) 
@@ -139,9 +143,32 @@ bash bin/tf-deploy.sh plan
 ```
 ###### Terrafrom apply
 ```bash
-bash bin/tf-deploy.sh apply
+bash bin/tf-deploy.sh
 ```
 ###### Terrafrom destroy (require approval)
 ```bash
 bash bin/tf-deploy.sh destroy
+```
+
+
+### Test mount k8s secret using [MikroK8s](https://microk8s.io)
+
+---------------------------------------------
+
+###### Export k8s secret name to mount into pod
+```bash
+microk8s kubectl get secrets
+export K8S_SECRET=fabacus-development-sample-vars-secrets
+```
+```bash
+export PROJECT_NAME=fabacus
+export ENVIRONMENT=development
+```
+###### Create pod
+```bash
+cat pod.yaml.sample | envsubst | microk8s kubectl apply -f -
+```
+###### Describe envs and check from file ```.env.development.sample```
+```bash
+microk8s kubectl -n $ENVIRONMENT exec -it $K8S_SECRET env
 ```

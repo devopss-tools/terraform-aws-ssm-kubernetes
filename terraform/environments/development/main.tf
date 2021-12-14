@@ -1,9 +1,5 @@
 ###### Configure provider ######
 
-provider "aws" {
-  region  = var.AWS_REGION
-}
-
 module "secrets-manager" {
   source                              = "../../modules/secrets-manager"
   AWS_REGION                          = var.AWS_REGION
